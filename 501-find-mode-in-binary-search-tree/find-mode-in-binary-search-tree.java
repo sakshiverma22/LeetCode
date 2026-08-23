@@ -14,23 +14,34 @@
  * }
  */
 class Solution {
+    private Integer prev=null;
+    private int count=0;
+    private int maxCount=0;
+    private List<Integer> modes=new ArrayList<>();
     public int[] findMode(TreeNode root) {
-        Map<Integer, Integer> freq=new HashMap<>();
-        inorder(root,freq);
-        int maxCount=0;
-        for(int c:freq.values()) maxCount=Math.max(maxCount,c);
-        List<Integer>modes=new ArrayList<>();
-        for(Map.Entry<Integer, Integer> e:freq.entrySet()){
-            if(e.getValue()==maxCount) modes.add(e.getKey());
+        inorder(root);
+        int[] res=new int[modes.size()];
+        for(int i=0;i<modes.size();i++){
+            res[i]=modes.get(i);
         }
-        int[] result=new int[modes.size()];
-        for(int i=0;i<modes.size();i++) result[i]=modes.get(i);
-        return result;
+        return res;
     }
-    private void inorder(TreeNode node, Map<Integer, Integer> freq){
+    private void inorder(TreeNode node){
         if(node==null) return;
-        inorder(node.left, freq);
-        freq.put(node.val, freq.getOrDefault(node.val,0)+1);
-        inorder(node.right,freq);
+        inorder(node.left);
+        if(prev !=null && node.val==prev){
+            count++;
+        }else{
+            count=1;
+        }
+        if(count>maxCount){
+            maxCount=count;
+            modes.clear();
+            modes.add(node.val);
+        }else if(count==maxCount){
+            modes.add(node.val);
+        }
+        prev=node.val;
+        inorder(node.right);
     }
 }
